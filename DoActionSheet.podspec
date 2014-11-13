@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name     = 'DoActionSheet'
+  s.name     = 'DoImageActionSheet'
   s.version  = '1.1'
   s.author   = { 'Walsh' => 'fullscreen@gmail.com' }
   s.homepage = 'https://github.com/walsh2000/DoActionSheet'
