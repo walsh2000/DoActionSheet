@@ -1,9 +1,9 @@
 DoActionSheet
 =============
 
-  A replacement for UIActionSheet : customizable theme, easy to use with image or map
+  A replacement for UIActionSheet : customizable theme, easy to use with image or map.
 
-This is a fork of donobono/DoActionSheet
+This is a fork of donobono/DoActionSheet.
 Significant changes include:
 - Can show a horizontally-scrolling list of images across the top of the action sheet.
 - Uses delegate protocol instead of blocks for callbacks
