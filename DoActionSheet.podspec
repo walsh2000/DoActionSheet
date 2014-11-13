@@ -1,11 +1,11 @@
 Pod::Spec.new do |s|
   s.name     = 'DoActionSheet'
-  s.version  = '1.0'
-  s.author   = { 'JackShi' => 'shiguifei@gmail.com' }
-  s.homepage = 'https://github.com/donobono/DoActionSheet'
-  s.summary  = 'An replacement for UIActionSheet : block-based, customizable theme, easy to use with image or map'
+  s.version  = '1.1'
+  s.author   = { 'Walsh' => 'fullscreen@gmail.com' }
+  s.homepage = 'https://github.com/walsh2000/DoActionSheet'
+  s.summary  = 'A replacement for UIActionSheet : images in the action sheet'
   s.license  = { :type => 'MIT', :file => 'License' }
-  s.source   = { :git => 'https://github.com/donobono/DoActionSheet.git', :tag => '1.0' }
+  s.source   = { :git => 'https://github.com/walsh2000/DoActionSheet.git', :tag => '1.1' }
   s.source_files = 'TestActionSheet/3rdSource/UIImage-ResizeMagick/*.{h,m}','TestActionSheet/DoActionSheet/*.{h,m}'
   s.platform = :ios
   s.requires_arc = true
