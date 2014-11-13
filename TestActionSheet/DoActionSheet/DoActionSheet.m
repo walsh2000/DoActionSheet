@@ -16,7 +16,8 @@
 
 @end
 
-@implementation DoActionSheetController
+@implementation DoActionSheetController {
+}
 
 #pragma mark - View life cycle
 
@@ -38,7 +39,47 @@
 
 @end
 
-@implementation DoActionSheet
+@implementation DoActionSheet {
+	NSString                *_strTitle;
+	NSString                *_strCancel;
+	
+	UIWindow                *_actionWindow;
+	UIView                  *_vActionSheet;
+	
+	CGRect                  _rectActionSheet;
+	UIImageView *_imageView;
+	UIScrollView *_scrollView;
+	NSArray *_horizontalScrollingImages;
+}
+
+@synthesize delegate = _delegate;
+@synthesize nAnimationType = _nAnimationType;
+@synthesize nContentMode = _nContentMode;
+@synthesize nDestructiveIndex = _nDestructiveIndex;
+@synthesize dRound = _dRound;
+@synthesize dButtonRound = _dButtonRound;
+@synthesize bDestructive = _bDestructive;
+@synthesize nTag = _nTag;
+@synthesize aButtons = _aButtons;
+@synthesize iImage = _iImage;
+@synthesize dLocation = _dLocation;
+@synthesize doBackColor = _doBackColor;
+@synthesize doButtonColor = _doButtonColor;;
+@synthesize doCancelColor = _doCancelColor;
+@synthesize doDestructiveColor = _doDestructiveColor;;
+@synthesize doTitleTextColor = _doTitleTextColor;
+@synthesize doButtonTextColor = _doButtonTextColor;
+@synthesize doCancelTextColor = _doCancelTextColor;
+@synthesize doDestructiveTextColor = _doDestructiveTextColor;
+@synthesize doDimmedColor = _doDimmedColor;
+@synthesize doTitleFont = _doTitleFont;
+@synthesize doButtonFont = _doButtonFont;
+@synthesize doCancelFont = _doCancelFont;
+@synthesize doTitleInset = _doTitleInset;
+@synthesize doButtonInset = _doButtonInset;
+@synthesize doButtonHeight = _doButtonHeight;
+@synthesize doScrollingImagesHeight = _doScrollingImagesHeight;
+@synthesize doScrollingImagesGap = _doScrollingImagesGap;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -51,56 +92,129 @@
     return self;
 }
 
+- (void)setupHorizontalScrollView:(int)topGap {
+	int height = self.doScrollingImagesHeight?:DO_SCROLLING_IMAGES_HEIGHT;
+	int gap = self.doScrollingImagesGap?:DO_SCROLLING_IMAGES_GAP;
+	
+	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, topGap, 320, height)];
+	UIColor *backColor = (self.doBackColor == nil) ? DO_AS_BACK_COLOR : self.doBackColor;
+	[_scrollView setBackgroundColor:backColor];
+	[_scrollView setCanCancelContentTouches:NO];
+	_scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+	
+	_scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
+	_scrollView.clipsToBounds = YES;
+	_scrollView.scrollEnabled = YES;
+	_scrollView.pagingEnabled = NO;
+	
+	CGFloat cx = gap;
+	int tagIndex = 0;
+	for (UIImage *image in _horizontalScrollingImages) {
+		//compute aspect ratio
+		CGSize imageSize = [image size];
+		CGFloat aspectRatio = imageSize.width/imageSize.height;
+		CGFloat calculatedWidth = aspectRatio * (CGFloat) height;
+
+		UIButton *imageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		imageButton.frame = CGRectIntegral(CGRectMake(cx, 0, calculatedWidth, height));
+		
+		[imageButton setImage:image forState:UIControlStateNormal];
+		[imageButton addTarget:self action:@selector(imageButtonTarget:) forControlEvents:UIControlEventTouchUpInside];
+		[imageButton setTag:(tagIndex)];
+		tagIndex++;
+		
+		[_scrollView addSubview:imageButton];
+		
+		cx += imageButton.frame.size.width + gap;
+	}
+	
+	[_scrollView setContentSize:CGSizeMake(cx, [_scrollView bounds].size.height)];
+	[_vActionSheet addSubview:_scrollView];
+	
+}
+
 // with cancel button and other buttons
 - (void)showC:(NSString *)strTitle
        cancel:(NSString *)strCancel
       buttons:(NSArray *)aButtons
-       result:(DoActionSheetHandler)result
 {
     _strTitle   = strTitle;
     _strCancel  = strCancel;
     _aButtons   = aButtons;
-    _result     = result;
-    
-    [self showActionSheet];
+	_horizontalScrollingImages = nil;
+
+	[self showActionSheet];
 }
 
 // with cancel button and other buttons, without title
 - (void)showC:(NSString *)strCancel
       buttons:(NSArray *)aButtons
-       result:(DoActionSheetHandler)result
 {
     _strTitle   = nil;
     _strCancel  = strCancel;
     _aButtons   = aButtons;
-    _result     = result;
-    
-    [self showActionSheet];
+	_horizontalScrollingImages = nil;
+	
+	[self showActionSheet];
 }
 
 // with only buttons
 - (void)show:(NSString *)strTitle
      buttons:(NSArray *)aButtons
-      result:(DoActionSheetHandler)result
 {
     _strTitle   = strTitle;
     _strCancel  = nil;
     _aButtons   = aButtons;
-    _result     = result;
-    
-    [self showActionSheet];
+	_horizontalScrollingImages = nil;
+
+	[self showActionSheet];
 }
 
-// with only buttons, without title
+// with only buttons, scrolling images, without title
 - (void)show:(NSArray *)aButtons
-      result:(DoActionSheetHandler)result
+{
+	_strTitle   = nil;
+	_strCancel  = nil;
+	_aButtons   = aButtons;
+	_horizontalScrollingImages = nil;
+	
+	[self showActionSheet];
+}
+
+// with only buttons, scrolling images, without title
+- (void)show:(NSArray *)aButtons
+	  images:(NSArray *)images
 {
     _strTitle   = nil;
     _strCancel  = nil;
     _aButtons   = aButtons;
-    _result     = result;
-    
-    [self showActionSheet];
+	_horizontalScrollingImages = images;
+
+	[self showActionSheet];
+}
+
+
+- (void)updateFocusImage:(UIImage *)image {
+	if (_nContentMode == DoASContentImage) {
+		UIImage *iResized = [image resizedImageWithMaximumSize:CGSizeMake(360, 360)];
+		BOOL needsReset = (_iImage == nil || !CGSizeEqualToSize([iResized size], [_iImage size]));
+
+		_iImage = iResized;
+		_imageView.frame = CGRectMake(self.doButtonInset.left, self.doButtonInset.top, iResized.size.width / 2, iResized.size.height / 2);
+		_imageView.center = CGPointMake(_imageView.superview.center.x, _imageView.center.y);
+		_imageView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+		[_imageView setImage:iResized];
+		if (needsReset) {
+			[self showActionSheet];
+		}
+	}
+}
+
+- (void)updateHorizontallyScrollingImages:(NSArray *)images {
+
+	self.doTitleInset = UIEdgeInsetsZero;
+	_horizontalScrollingImages = images;
+	[self showActionSheet];
 }
 
 - (double)getTextHeight:(UILabel *)lbText
@@ -171,7 +285,16 @@
     double dHeight = 0;
     self.backgroundColor = (self.doDimmedColor == nil) ? DO_AS_DIMMED_COLOR : self.doDimmedColor;
 
-    // make back view -----------------------------------------------------------------------------------------------
+	BOOL needShow = YES;
+	if (_vActionSheet != nil) {
+		needShow = NO;
+		NSArray* subViews = [self subviews];
+		for (UIView *aView in subViews) {
+			[aView removeFromSuperview];
+		}
+	}
+
+	// make back view -----------------------------------------------------------------------------------------------
     _vActionSheet = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 0)];
     _vActionSheet.backgroundColor = (self.doBackColor == nil) ? DO_AS_BACK_COLOR : self.doBackColor;
     [self addSubview:_vActionSheet];
@@ -206,7 +329,14 @@
     if (self.doButtonInset.top == 0 && self.doButtonInset.left == 0 && self.doButtonInset.bottom == 0 && self.doButtonInset.right == 0) {
         self.doButtonInset = DO_AS_BUTTON_INSET;
     }
-    // add scrollview for many buttons and content
+	
+	if ([_horizontalScrollingImages count]) {
+		[self setupHorizontalScrollView:(self.doButtonInset.top + dHeight)];
+		dHeight += self.doScrollingImagesHeight?:DO_SCROLLING_IMAGES_HEIGHT;
+		dHeight += DO_AS_TITLE_INSET.bottom;	//put a standard title-gap below us
+	}
+
+	// add scrollview for many buttons and content
     UIScrollView *sc = [[UIScrollView alloc] initWithFrame:CGRectMake(0, dHeight + self.doButtonInset.top, 320, 370)];
     sc.backgroundColor = [UIColor clearColor];
     [_vActionSheet addSubview:sc];
@@ -290,13 +420,43 @@
         [layer setCornerRadius:_dRound];
     }
 
-    [self showAnimation];
+	if (needShow) {
+		[self showAnimation];
+	} else {
+		_vActionSheet.frame = CGRectMake(0, self.bounds.size.height - _vActionSheet.frame.size.height + 15,
+										 self.bounds.size.width, _vActionSheet.frame.size.height);
+	}
 }
 
 - (void)buttonTarget:(id)sender
 {
-    _result([sender tag]);
-    [self hideAnimation];
+	if (_delegate) {
+		int buttonIndex = (int)[sender tag];
+		if (buttonIndex == DO_AS_CANCEL_TAG) {
+			[_delegate doActionSheetDidCancel:self];
+		} else {
+			NSString *buttonTitle = nil;
+			if (buttonIndex >= 0 && buttonIndex <= [_aButtons count]) {
+				buttonTitle = [_aButtons objectAtIndex:buttonIndex];
+			}
+			
+			[_delegate doActionSheet:self didSelectButton:buttonIndex title:buttonTitle];
+		}
+	}
+	[self hideAnimation];
+}
+
+- (void)imageButtonTarget:(id)sender
+{
+	if (_delegate) {
+		int buttonIndex = (int)[sender tag];
+		UIImage *buttonImage = nil;
+		if (buttonIndex >= 0 && buttonIndex <= [_horizontalScrollingImages count]) {
+			buttonImage = [_horizontalScrollingImages objectAtIndex:buttonIndex];
+		}
+		[_delegate doActionSheet:self didSelectImage:buttonIndex image:buttonImage];
+	}
+	[self hideAnimation];
 }
 
 - (double)addContent:(UIScrollView *)sc
@@ -323,6 +483,7 @@
                 [sc addSubview:iv];
                 dContentOffset = iv.frame.size.height + self.doButtonInset.bottom + self.doButtonInset.bottom;
             }
+			_imageView = iv;
         }
             break;
             
@@ -333,7 +494,7 @@
                 dContentOffset = 0;
                 break;
             }
-            
+			
             MKMapView *vMap = [[MKMapView alloc] initWithFrame:CGRectMake(self.doButtonInset.left, self.doButtonInset.top,
                                                                           240, 180)];
             vMap.center = CGPointMake(sc.center.x, vMap.center.y);
@@ -439,7 +600,6 @@
 - (void)hideAnimation
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
-
     [UIView animateWithDuration:0.2 animations:^(void) {
 
         switch (_nAnimationType) {
@@ -514,7 +674,9 @@
     if (CGRectContainsPoint(_vActionSheet.frame, pt))
         return;
 
-    _result(DO_AS_CANCEL_TAG);
+	if (_delegate) {
+		[_delegate doActionSheetDidCancel:self];
+	}
     [self hideAnimation];
 }
 

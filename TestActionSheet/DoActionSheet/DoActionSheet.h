@@ -76,6 +76,10 @@
 #define DO_AS_BUTTON_HEIGHT        40
 #define DO_AS_SCROLL_HEIGHT        300
 
+#define DO_SCROLLING_IMAGES_HEIGHT  120
+#define DO_SCROLLING_IMAGES_HEIGHT_SLIM  75
+#define DO_SCROLLING_IMAGES_GAP		5
+
 #define DO_AS_CANCEL_TAG           -100
 
 typedef NS_ENUM(int, DoAlertViewTransitionStyle) {
@@ -91,21 +95,16 @@ typedef NS_ENUM(int, DoAlertViewContentType) {
 };
 
 @class DoActionSheet;
-typedef void(^DoActionSheetHandler)(int nResult);
+
+@protocol DoActionSheetDelegate <NSObject>
+- (void)doActionSheetDidCancel:(DoActionSheet *)sheet;
+- (void)doActionSheet:(DoActionSheet *)sheet didSelectButton:(int)buttonIndex title:(NSString *)title;
+- (void)doActionSheet:(DoActionSheet *)sheet didSelectImage:(int)imageIndex image:(UIImage *)image;
+@end
 
 @interface DoActionSheet : UIView <MKMapViewDelegate>
-{
-@private
-    NSString                *_strTitle;
-    NSString                *_strCancel;
-    
-    UIWindow                *_actionWindow;
-    UIView                  *_vActionSheet;
 
-    DoActionSheetHandler    _result;
-    
-    CGRect                  _rectActionSheet;
-}
+@property (nonatomic, readwrite, weak) id <DoActionSheetDelegate> delegate;
 
 @property (readwrite)   int         nAnimationType;
 @property (readwrite)   int         nContentMode;
@@ -152,26 +151,32 @@ typedef void(^DoActionSheetHandler)(int nResult);
 // button height
 @property (readwrite)   CGFloat         doButtonHeight;
 
+// Height of images in horizontal scroller - Default: DO_SCROLLING_IMAGES_HEIGHT
+@property (readwrite) int doScrollingImagesHeight;
+// Gap between images in horizontal scroller - Default: DO_SCROLLING_IMAGES_GAP
+@property (readwrite) int doScrollingImagesGap;
+
 
 // with cancel button and other buttons
 - (void)showC:(NSString *)strTitle
        cancel:(NSString *)strCancel
-      buttons:(NSArray *)aButtons
-       result:(DoActionSheetHandler)result;
+      buttons:(NSArray *)aButtons;
 
 // with cancel button and other buttons, without title
 - (void)showC:(NSString *)strCancel
-      buttons:(NSArray *)aButtons
-       result:(DoActionSheetHandler)result;
+      buttons:(NSArray *)aButtons;
 
 // with only buttons
 - (void)show:(NSString *)strTitle
-     buttons:(NSArray *)aButtons
-      result:(DoActionSheetHandler)result;
+     buttons:(NSArray *)aButtons;
 
 // with only buttons, without title
-- (void)show:(NSArray *)aButtons
-      result:(DoActionSheetHandler)result;
+- (void)show:(NSArray *)aButtons;
 
+- (void)show:(NSArray *)aButtonTitles
+	  images:(NSArray *)aImages;
+
+- (void)updateFocusImage:(UIImage *)image;
+- (void)updateHorizontallyScrollingImages:(NSArray *)images;
 
 @end
