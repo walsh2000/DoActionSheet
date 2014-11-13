@@ -37,14 +37,8 @@
     self.doButtonTextColor = DO_RGB(255, 255, 255);
     self.doCancelTextColor = DO_RGB(255, 255, 255);
     self.doDestructiveTextColor = DO_RGB(255, 255, 255);
-    
-    self.doDimmedColor = DO_RGBA(0, 0, 0, 0.7);
-    
-    self.doTitleFont = [UIFont fontWithName:@"Avenir-Heavy" size:14];
-    self.doButtonFont = [UIFont fontWithName:@"Avenir-Medium" size:14];
-    self.doCancelFont = [UIFont fontWithName:@"Avenir-Medium" size:14];
-    
-    self.doTitleInset = UIEdgeInsetsMake(10, 20, 10, 20);
+
+	self.doTitleInset = UIEdgeInsetsMake(10, 20, 10, 20);
     self.doButtonInset = UIEdgeInsetsMake(5, 20, 5, 20);
     
     self.doButtonHeight = 40.0f;

@@ -65,10 +65,10 @@
 
 
 
-#define DO_AS_DIMMED_COLOR         DO_RGBA(0, 0, 0, 0.7)
+#define DO_AS_DIMMED_COLOR         DO_RGBA(0, 0, 0, 0.25)
 
-#define DO_AS_TITLE_FONT           [UIFont fontWithName:@"Avenir-Heavy" size:14]
-#define DO_AS_BUTTON_FONT          [UIFont fontWithName:@"Avenir-Medium" size:14]
+#define DO_AS_TITLE_FONT           [UIFont boldSystemFontOfSize:14]
+#define DO_AS_BUTTON_FONT          [UIFont systemFontOfSize:14]
 
 #define DO_AS_TITLE_INSET          UIEdgeInsetsMake(10, 20, 10, 20)
 #define DO_AS_BUTTON_INSET         UIEdgeInsetsMake(5, 20, 5, 20)
