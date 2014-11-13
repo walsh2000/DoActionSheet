@@ -1,21 +1,27 @@
 DoActionSheet
 =============
 
-  An replacement for UIActionSheet : block-based, customizable theme, easy to use with image or map
+  A replacement for UIActionSheet : customizable theme, easy to use with image or map
+
+This is a fork of donobono/DoActionSheet
+Significant changes include:
+- Can show a horizontally-scrolling list of images across the top of the action sheet.
+- Uses delegate protocol instead of blocks for callbacks
+- Can update the Action Sheet's image while the action sheet is on-screen
 
 ## Preview
 
 ### with title, with destructive button, with cancel button and with image
-![DoAlertView Screenshot](https://raw.github.com/donobono/DoActionSheet/master/p1.png)
+![DoAlertView Screenshot](https://raw.github.com/walsh2000/DoActionSheet/master/p1.png)
 
 ### support scroll if there are many buttons but cancel button’s position is fixed
-![DoAlertView Screenshot](https://raw.github.com/donobono/DoActionSheet/master/p2.png)
+![DoAlertView Screenshot](https://raw.github.com/walsh2000/DoActionSheet/master/p2.png)
 
 ### customizable color set
-![DoAlertView Screenshot](https://raw.github.com/donobono/DoActionSheet/master/p3.png)
+![DoAlertView Screenshot](https://raw.github.com/walsh2000/DoActionSheet/master/p3.png)
 
 ### with map
-![DoAlertView Screenshot](https://raw.github.com/donobono/DoActionSheet/master/p4.png)
+![DoAlertView Screenshot](https://raw.github.com/walsh2000/DoActionSheet/master/p4.png)
 
 
 ## Requirements
@@ -88,7 +94,7 @@ vActionSheet.nDestructiveIndex = 2;
 
 ## Credits
 
-DoActionSheet was created by Dono Cho.
+DoActionSheet was created by Dono Cho, extended by Raymond Walsh.
 
 
 ## License
