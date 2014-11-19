@@ -89,9 +89,10 @@ typedef NS_ENUM(int, DoAlertViewTransitionStyle) {
 };
 
 typedef NS_ENUM(int, DoAlertViewContentType) {
-    DoASContentNone = 0,
-    DoASContentImage,
-    DoASContentMap,
+	DoASContentNone = 0,
+	DoASContentImage,
+	DoASContentMap,
+	DoASContentImageSubset
 };
 
 @class DoActionSheet;
@@ -155,6 +156,9 @@ typedef NS_ENUM(int, DoAlertViewContentType) {
 @property (readwrite) int doScrollingImagesHeight;
 // Gap between images in horizontal scroller - Default: DO_SCROLLING_IMAGES_GAP
 @property (readwrite) int doScrollingImagesGap;
+
+@property (readwrite) int nImageSubsetScaleWidth;
+@property (readwrite) int nImageSubsetDisplayHeight;
 
 
 // with cancel button and other buttons

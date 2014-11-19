@@ -80,6 +80,8 @@
 @synthesize doButtonHeight = _doButtonHeight;
 @synthesize doScrollingImagesHeight = _doScrollingImagesHeight;
 @synthesize doScrollingImagesGap = _doScrollingImagesGap;
+@synthesize nImageSubsetScaleWidth = _nImageSubsetScaleWidth;
+@synthesize nImageSubsetDisplayHeight = _nImageSubsetDisplayHeight;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -193,6 +195,12 @@
 	[self showActionSheet];
 }
 
+- (UIImage *)scaledImageSubset:(UIImage *)original {
+	int scaledWidth = _nImageSubsetScaleWidth?:552;
+	CGSize originalSize = [original size];
+	int scaledHeight = (int)((CGFloat)(originalSize.height/originalSize.width)*(CGFloat)scaledWidth);
+	return [original resizedImageWithMaximumSize:CGSizeMake(scaledWidth, scaledHeight)];
+}
 
 - (void)updateFocusImage:(UIImage *)image {
 	if (_nContentMode == DoASContentImage) {
@@ -207,6 +215,9 @@
 		if (needsReset) {
 			[self showActionSheet];
 		}
+	} else if (_nContentMode == DoASContentImageSubset) {
+		_iImage = [self scaledImageSubset:image];
+		[_imageView setImage:_iImage];
 	}
 }
 
@@ -486,6 +497,25 @@
 			_imageView = iv;
         }
             break;
+        case DoASContentImageSubset:
+        {
+            UIImageView *iv = nil;
+            if (_iImage != nil)
+            {
+                UIImage *iResized = [self scaledImageSubset:_iImage];
+                int displayHeight = _nImageSubsetDisplayHeight?:125;
+                iv = [[UIImageView alloc] initWithImage:iResized];
+                iv.contentMode = UIViewContentModeScaleAspectFill;
+                iv.clipsToBounds = YES;
+                iv.frame = CGRectMake(self.doButtonInset.left, self.doButtonInset.top, (sc.frame.size.width-(self.doButtonInset.left*2)), displayHeight);
+                iv.center = CGPointMake(sc.center.x, iv.center.y);
+                iv.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+                
+                [sc addSubview:iv];
+                dContentOffset = iv.frame.size.height + self.doButtonInset.bottom + self.doButtonInset.bottom;
+            }
+            _imageView = iv;
+        }			break;
             
         case DoASContentMap:
         {
