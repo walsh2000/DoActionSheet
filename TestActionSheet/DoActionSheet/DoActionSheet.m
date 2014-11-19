@@ -196,10 +196,18 @@
 }
 
 - (UIImage *)scaledImageSubset:(UIImage *)original {
-	int scaledWidth = _nImageSubsetScaleWidth?:552;
+	int scaledWidth = [self scaledWidth];
 	CGSize originalSize = [original size];
 	int scaledHeight = (int)((CGFloat)(originalSize.height/originalSize.width)*(CGFloat)scaledWidth);
 	return [original resizedImageWithMaximumSize:CGSizeMake(scaledWidth, scaledHeight)];
+}
+
+- (int)scaledDisplayHeight {
+	return _nImageSubsetDisplayHeight?:125;
+}
+
+- (int)scaledWidth {
+	return _nImageSubsetScaleWidth?:552;
 }
 
 - (void)updateFocusImage:(UIImage *)image {
@@ -501,22 +509,32 @@
         {
             UIImageView *iv = nil;
             if (_iImage != nil)
-            {
-                UIImage *iResized = [self scaledImageSubset:_iImage];
-                int displayHeight = _nImageSubsetDisplayHeight?:125;
-                iv = [[UIImageView alloc] initWithImage:iResized];
-                iv.contentMode = UIViewContentModeScaleAspectFill;
-                iv.clipsToBounds = YES;
-                iv.frame = CGRectMake(self.doButtonInset.left, self.doButtonInset.top, (sc.frame.size.width-(self.doButtonInset.left*2)), displayHeight);
-                iv.center = CGPointMake(sc.center.x, iv.center.y);
-                iv.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-                
-                [sc addSubview:iv];
-                dContentOffset = iv.frame.size.height + self.doButtonInset.bottom + self.doButtonInset.bottom;
-            }
+			{
+				_iImage = [self scaledImageSubset:_iImage];
+				int displayHeight = [self scaledDisplayHeight];
+				iv = [[UIImageView alloc] initWithImage:_iImage];
+				iv.contentMode = UIViewContentModeScaleAspectFill;
+				iv.clipsToBounds = YES;
+				iv.frame = CGRectMake(self.doButtonInset.left, self.doButtonInset.top, (sc.frame.size.width-(self.doButtonInset.left*2)), displayHeight);
+				iv.center = CGPointMake(sc.center.x, iv.center.y);
+				iv.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+				
+				[sc addSubview:iv];
+				dContentOffset = iv.frame.size.height + self.doButtonInset.bottom + self.doButtonInset.bottom;
+				
+				UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+																								action:@selector(imageSubsetTapped:)];
+				[tapRecognizer setNumberOfTapsRequired:1];
+				[tapRecognizer setNumberOfTouchesRequired:1];
+				[tapRecognizer setCancelsTouchesInView:NO];
+				[tapRecognizer setDelaysTouchesBegan:NO];
+				[iv setUserInteractionEnabled:YES];
+				[iv addGestureRecognizer:tapRecognizer];
+				[iv setTag:123456];
+			}
             _imageView = iv;
         }			break;
-            
+			
         case DoASContentMap:
         {
             if (_dLocation == nil)
@@ -709,5 +727,45 @@
 	}
     [self hideAnimation];
 }
+
+#pragma mark - Tap Gesture Recognizer
+
+- (void)imageSubsetTapped:(UITapGestureRecognizer *)gesture {
+	if (_delegate) {
+		@autoreleasepool {
+			//Need to cut a subset of _iImage
+			CGSize scaledSize = [_imageView frame].size;	//the height of what we are showing
+			CGSize imageSize = [_iImage size];
+			CGFloat scale = imageSize.width / scaledSize.width;
+			CGFloat cropHeight = (scaledSize.height * scale);
+			int excessHeight = (int)((imageSize.height - cropHeight) / 2);
+			CGRect cropRect = CGRectZero;
+			cropRect.size.height = (int) cropHeight;
+			cropRect.size.width = imageSize.width;
+			cropRect.origin.x = 0;
+			cropRect.origin.y = excessHeight;
+			
+			UIImage *croppedImage = [self croppedImage:_iImage withRect:cropRect];
+			[_delegate doActionSheet:self didSelectImageSubset:croppedImage];
+			[self hideAnimation];
+		}
+	}
+}
+
+#pragma mark - Image Resize
+
+- (UIImage *)croppedImage:(UIImage *)image withRect:(CGRect)rect {
+	
+	UIGraphicsBeginImageContext(rect.size);
+	CGContextRef context = UIGraphicsGetCurrentContext();
+	CGRect drawRect = CGRectMake(-rect.origin.x, -rect.origin.y, image.size.width, image.size.height);
+	CGContextClipToRect(context, CGRectMake(0, 0, rect.size.width, rect.size.height));
+	[image drawInRect:drawRect];
+	UIImage* subImage = UIGraphicsGetImageFromCurrentImageContext();
+	UIGraphicsEndImageContext();
+	
+	return subImage;
+}
+
 
 @end

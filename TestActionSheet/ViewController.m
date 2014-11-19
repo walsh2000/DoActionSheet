@@ -58,12 +58,12 @@
 	if (_sgSelectImage.selectedSegmentIndex == 1)
 	{
 		vActionSheet.iImage = [UIImage imageNamed:@"pic1.jpg"];
-		vActionSheet.nContentMode = DoASContentImage;
+		vActionSheet.nContentMode = DoASContentImageSubset;
 	}
 	else if (_sgSelectImage.selectedSegmentIndex == 2)
 	{
 		vActionSheet.iImage = [UIImage imageNamed:@"pic2.jpg"];
-		vActionSheet.nContentMode = DoASContentImage;
+		vActionSheet.nContentMode = DoASContentImageSubset;
 	}
 	else if (_sgSelectImage.selectedSegmentIndex == 3)
 	{
@@ -187,10 +187,6 @@
 			
 			// Within the group enumeration block, filter to enumerate just photos.
 			[group setAssetsFilter:[ALAssetsFilter allPhotos]];
-			NSLog( @"----------- %@",
-				  [group valueForProperty:ALAssetsGroupPropertyName]
-				  );
-			
 			// Chooses the photo at the last index
 			[group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *alAsset, NSUInteger index, BOOL *innerStop) {
 				
@@ -199,7 +195,6 @@
 					ALAssetRepresentation *representation = [alAsset defaultRepresentation];
 					UIImage *latestPhoto = [UIImage imageWithCGImage:[representation fullScreenImage]];
 					if (latestPhoto != nil) {
-						NSLog(@"--------------------- -- Adding Image: %@", latestPhoto);
 						[images addObject:latestPhoto];
 					}
 					if ([images count] >= imagesToRetrieve) {
@@ -210,14 +205,12 @@
 			}];
 			
 			if (group == nil) {
-				NSLog(@"--------------------- Pulsing Semaphore");
 				*stop = YES;
 				dispatch_semaphore_signal(sem);
 			}
 			
 		} failureBlock: ^(NSError *error) {
 			// Typically you should handle an error more gracefully than this.
-			NSLog(@"No groups");
 			dispatch_semaphore_signal(sem);
 		}];
 	});
@@ -225,7 +218,6 @@
 		dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
 			if ([images count]) {
-				NSLog( @" --- %@", images);
 				[vActionSheet updateHorizontallyScrollingImages:images];
 			}
 		});
@@ -243,6 +235,10 @@
 
 - (void)doActionSheet:(DoActionSheet *)sheet didSelectImage:(int)imageIndex image:(UIImage *)image {
 	NSLog( @"Action Sheet selected image: %d [%@]", imageIndex, NSStringFromCGSize([image size]));
+}
+
+- (void)doActionSheet:(DoActionSheet *)sheet didSelectImageSubset:(UIImage *)image {
+	NSLog( @"Action Sheet selected ImageSubset: [%@]", NSStringFromCGSize([image size]));
 }
 
 

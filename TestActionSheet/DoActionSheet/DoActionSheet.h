@@ -101,6 +101,7 @@ typedef NS_ENUM(int, DoAlertViewContentType) {
 - (void)doActionSheetDidCancel:(DoActionSheet *)sheet;
 - (void)doActionSheet:(DoActionSheet *)sheet didSelectButton:(int)buttonIndex title:(NSString *)title;
 - (void)doActionSheet:(DoActionSheet *)sheet didSelectImage:(int)imageIndex image:(UIImage *)image;
+- (void)doActionSheet:(DoActionSheet *)sheet didSelectImageSubset:(UIImage *)image;
 @end
 
 @interface DoActionSheet : UIView <MKMapViewDelegate>
