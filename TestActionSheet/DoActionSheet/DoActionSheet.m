@@ -415,12 +415,13 @@
     
     _vActionSheet.frame = CGRectMake(0, 0, _vActionSheet.frame.size.width, dHeight + 10);
 
-    DoActionSheetController *viewController = [[DoActionSheetController alloc] initWithNibName:nil bundle:nil];
-    viewController.actionSheet = self;
-    
+	
     if (!_actionWindow)
     {
-        UIWindow *window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+		DoActionSheetController *viewController = [[DoActionSheetController alloc] initWithNibName:nil bundle:nil];
+		viewController.actionSheet = self;
+
+		UIWindow *window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
         window.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         window.opaque = NO;
         window.windowLevel = UIWindowLevelAlert;
