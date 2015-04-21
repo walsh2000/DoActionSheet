@@ -574,9 +574,13 @@
 
 - (void)hideActionSheet
 {
-    [self removeFromSuperview];
-    [_actionWindow removeFromSuperview];
-    _actionWindow = nil;
+	[self removeFromSuperview];
+	[_actionWindow removeFromSuperview];
+	//remove ourselves as the view for this VC
+	[[_actionWindow rootViewController] setView:nil];
+	//This should destroy the DoActionSheetController
+	[_actionWindow setRootViewController:nil];
+	_actionWindow = nil;
 }
 
 - (void)showAnimation
