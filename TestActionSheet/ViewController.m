@@ -178,6 +178,7 @@
 	
 	int imagesToRetrieve = 10;
 	NSMutableArray *images = [[NSMutableArray alloc] init];
+	NSMutableArray *alAssets = [[NSMutableArray alloc] init];
 	dispatch_semaphore_t sem = dispatch_semaphore_create(0);
 	
 	ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
@@ -192,10 +193,10 @@
 				
 				// The end of the enumeration is signaled by asset == nil.
 				if (alAsset) {
-					ALAssetRepresentation *representation = [alAsset defaultRepresentation];
-					UIImage *latestPhoto = [UIImage imageWithCGImage:[representation fullScreenImage]];
+					UIImage *latestPhoto = [UIImage imageWithCGImage:[alAsset thumbnail]];
 					if (latestPhoto != nil) {
 						[images addObject:latestPhoto];
+						[alAssets addObject:alAsset];
 					}
 					if ([images count] >= imagesToRetrieve) {
 						// Stop the enumerations
@@ -218,7 +219,7 @@
 		dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
 			if ([images count]) {
-				[vActionSheet updateHorizontallyScrollingImages:images];
+				[vActionSheet updateHorizontallyScrollingImages:images alAssetsLibrary:library alAssets:alAssets];
 			}
 		});
 	});

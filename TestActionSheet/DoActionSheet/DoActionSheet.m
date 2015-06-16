@@ -50,6 +50,8 @@
 	UIImageView *_imageView;
 	UIScrollView *_scrollView;
 	NSArray *_horizontalScrollingImages;
+	NSArray *_horizontalScrollingAlAssets;
+	ALAssetsLibrary *_alAssetsLibrary;
 }
 
 @synthesize delegate = _delegate;
@@ -144,6 +146,8 @@
     _strCancel  = strCancel;
     _aButtons   = aButtons;
 	_horizontalScrollingImages = nil;
+	_horizontalScrollingAlAssets = nil;
+	_alAssetsLibrary = nil;
 
 	[self showActionSheet];
 }
@@ -156,6 +160,8 @@
     _strCancel  = strCancel;
     _aButtons   = aButtons;
 	_horizontalScrollingImages = nil;
+	_horizontalScrollingAlAssets = nil;
+	_alAssetsLibrary = nil;
 	
 	[self showActionSheet];
 }
@@ -168,6 +174,8 @@
     _strCancel  = nil;
     _aButtons   = aButtons;
 	_horizontalScrollingImages = nil;
+	_horizontalScrollingAlAssets = nil;
+	_alAssetsLibrary = nil;
 
 	[self showActionSheet];
 }
@@ -179,6 +187,8 @@
 	_strCancel  = nil;
 	_aButtons   = aButtons;
 	_horizontalScrollingImages = nil;
+	_horizontalScrollingAlAssets = nil;
+	_alAssetsLibrary = nil;
 	
 	[self showActionSheet];
 }
@@ -191,6 +201,8 @@
     _strCancel  = nil;
     _aButtons   = aButtons;
 	_horizontalScrollingImages = images;
+	_horizontalScrollingAlAssets = nil;
+	_alAssetsLibrary = nil;
 
 	[self showActionSheet];
 }
@@ -229,10 +241,12 @@
 	}
 }
 
-- (void)updateHorizontallyScrollingImages:(NSArray *)images {
+- (void)updateHorizontallyScrollingImages:(NSArray *)images alAssetsLibrary:(ALAssetsLibrary *)alLibrary alAssets:(NSArray *)alAssets {
 
 	self.doTitleInset = UIEdgeInsetsZero;
 	_horizontalScrollingImages = images;
+	_horizontalScrollingAlAssets = alAssets;
+	_alAssetsLibrary = alLibrary;
 	[self showActionSheet];
 }
 
@@ -472,7 +486,14 @@
 		int buttonIndex = (int)[sender tag];
 		UIImage *buttonImage = nil;
 		if (buttonIndex >= 0 && buttonIndex <= [_horizontalScrollingImages count]) {
-			buttonImage = [_horizontalScrollingImages objectAtIndex:buttonIndex];
+			if ([_horizontalScrollingAlAssets count] > buttonIndex) {
+				ALAsset *alAsset = [_horizontalScrollingAlAssets objectAtIndex:buttonIndex];
+				ALAssetRepresentation *representation = [alAsset defaultRepresentation];
+				buttonImage = [UIImage imageWithCGImage:[representation fullScreenImage]];
+			}
+			if (buttonImage == nil) {
+				buttonImage = [_horizontalScrollingImages objectAtIndex:buttonIndex];
+			}
 		}
 		[_delegate doActionSheet:self didSelectImage:buttonIndex image:buttonImage];
 	}

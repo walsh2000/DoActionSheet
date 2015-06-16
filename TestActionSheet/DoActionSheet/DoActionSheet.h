@@ -5,6 +5,7 @@
 //  Created by Donobono on 2014. 01. 01..
 //
 
+#import	<AssetsLibrary/AssetsLibrary.h>
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
 
@@ -182,6 +183,6 @@ typedef NS_ENUM(int, DoAlertViewContentType) {
 	  images:(NSArray *)aImages;
 
 - (void)updateFocusImage:(UIImage *)image;
-- (void)updateHorizontallyScrollingImages:(NSArray *)images;
+- (void)updateHorizontallyScrollingImages:(NSArray *)images alAssetsLibrary:(ALAssetsLibrary *)alLibrary alAssets:(NSArray *)alAssets;
 
 @end
