@@ -381,6 +381,7 @@
     if (dYContent > 0)
         dYContent += self.doButtonInset.bottom + self.doButtonInset.top;
 
+	CGFloat scale = [[UIScreen mainScreen] scale];
     // add buttons
     int nTagIndex = 0;
     for (NSString *str in _aButtons)
@@ -396,7 +397,16 @@
         dYContent += ((self.doButtonHeight > 0) ? self.doButtonHeight : DO_AS_BUTTON_HEIGHT) + self.doButtonInset.bottom;
         
         [sc addSubview:bt];
-        
+		
+		CGRect separatorFrame = bt.frame;
+		separatorFrame.origin.y += separatorFrame.size.height;
+		separatorFrame.origin.y ++;
+		separatorFrame.size.height = (1.0/scale);
+		UIView *separator = [[UIView alloc] initWithFrame:separatorFrame];
+		[separator setBackgroundColor:[UIColor colorWithRed:0.81 green:0.81 blue:0.81 alpha:1]];
+		dYContent += 2;
+		[sc addSubview:separator];
+		
         if (nTagIndex == _nDestructiveIndex)
         {
             bt.backgroundColor = (self.doDestructiveColor == nil) ? DO_AS_DESTRUCTIVE_COLOR : self.doDestructiveColor;
