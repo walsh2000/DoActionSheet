@@ -130,12 +130,14 @@ typedef NS_ENUM(int, DoAlertViewContentType) {
 // button background color
 @property (strong, nonatomic)   UIColor         *doBackColor;
 @property (strong, nonatomic)   UIColor         *doButtonColor;
+@property (strong, nonatomic)   UIColor         *doSelectedButtonColor;
 @property (strong, nonatomic)   UIColor         *doCancelColor;
 @property (strong, nonatomic)   UIColor         *doDestructiveColor;
 
 // button text color
 @property (strong, nonatomic)   UIColor         *doTitleTextColor;
 @property (strong, nonatomic)   UIColor         *doButtonTextColor;
+@property (strong, nonatomic)   UIColor         *doSelectedButtonTextColor;
 @property (strong, nonatomic)   UIColor         *doCancelTextColor;
 @property (strong, nonatomic)   UIColor         *doDestructiveTextColor;
 

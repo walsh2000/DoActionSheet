@@ -75,6 +75,8 @@
 	switch (_sgSelect.selectedSegmentIndex) {
 		case 0:
 			vActionSheet.nDestructiveIndex = 2;
+			vActionSheet.doSelectedButtonColor = [UIColor redColor];
+			vActionSheet.doSelectedButtonTextColor = [UIColor whiteColor];
 			
 			[vActionSheet showC:@"What do you want for this photo? "
 						 cancel:@"Cancel"

@@ -71,6 +71,7 @@
 @synthesize doDestructiveColor = _doDestructiveColor;;
 @synthesize doTitleTextColor = _doTitleTextColor;
 @synthesize doButtonTextColor = _doButtonTextColor;
+@synthesize doSelectedButtonTextColor = _doSelectedButtonTextColor;
 @synthesize doCancelTextColor = _doCancelTextColor;
 @synthesize doDestructiveTextColor = _doDestructiveTextColor;
 @synthesize doDimmedColor = _doDimmedColor;
@@ -289,19 +290,23 @@
 - (void)setButtonAttributes:(UIButton *)bt cancel:(BOOL)bCancel
 {
     bt.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-
+	UIColor *buttonBackgroundColor;
     if (bCancel)
     {
-        bt.backgroundColor = (self.doCancelColor == nil) ? DO_AS_CANCEL_COLOR : self.doCancelColor;
+		buttonBackgroundColor = (self.doCancelColor == nil) ? DO_AS_CANCEL_COLOR : self.doCancelColor;
+        bt.backgroundColor = buttonBackgroundColor;
         bt.titleLabel.font = (self.doCancelFont == nil) ? DO_AS_TITLE_FONT : self.doCancelFont;
         [bt setTitleColor:(self.doCancelTextColor == nil) ? DO_AS_CANCEL_TEXT_COLOR : self.doCancelTextColor forState:UIControlStateNormal];
     }
     else
-    {
-        bt.backgroundColor = (self.doButtonColor == nil) ? DO_AS_BUTTON_COLOR : self.doButtonColor;
-        bt.titleLabel.font = (self.doButtonFont == nil) ? DO_AS_BUTTON_FONT : self.doButtonFont;
-        [bt setTitleColor:(self.doButtonTextColor == nil) ? DO_AS_BUTTON_TEXT_COLOR : self.doButtonTextColor forState:UIControlStateNormal];
-    }
+	{
+		buttonBackgroundColor = (self.doButtonColor == nil) ? DO_AS_BUTTON_COLOR : self.doButtonColor;
+		bt.backgroundColor = buttonBackgroundColor;
+		bt.titleLabel.font = (self.doButtonFont == nil) ? DO_AS_BUTTON_FONT : self.doButtonFont;
+		UIColor *buttonTextColor = (self.doButtonTextColor == nil) ? DO_AS_BUTTON_TEXT_COLOR : self.doButtonTextColor;
+		[bt setTitleColor:buttonTextColor forState:UIControlStateNormal];
+		[bt setTitleColor:(self.doSelectedButtonTextColor == nil) ? buttonTextColor : self.doSelectedButtonTextColor forState:UIControlStateHighlighted];
+	}
 
     if (_dButtonRound > 0)
     {
@@ -311,6 +316,24 @@
     }
 
     [bt addTarget:self action:@selector(buttonTarget:) forControlEvents:UIControlEventTouchUpInside];
+
+	[bt setBackgroundImage:nil forState:UIControlStateNormal];
+	UIColor *selectedBackgroundColor = (self.doSelectedButtonColor == nil) ? buttonBackgroundColor : self.doSelectedButtonColor;
+	[bt setBackgroundImage:[self imageWithColor:selectedBackgroundColor] forState:UIControlStateHighlighted];
+}
+
+- (UIImage *)imageWithColor:(UIColor *)color {
+	CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+	UIGraphicsBeginImageContext(rect.size);
+	CGContextRef context = UIGraphicsGetCurrentContext();
+	
+	CGContextSetFillColorWithColor(context, [color CGColor]);
+	CGContextFillRect(context, rect);
+	
+	UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+	UIGraphicsEndImageContext();
+	
+	return image;
 }
 
 - (void)showActionSheet
