@@ -429,8 +429,40 @@
 		[separator setBackgroundColor:[UIColor colorWithRed:0.81 green:0.81 blue:0.81 alpha:1]];
 		dYContent += 2;
 		[sc addSubview:separator];
-		
-        if (nTagIndex == _nDestructiveIndex)
+		[separator setTranslatesAutoresizingMaskIntoConstraints:NO];
+		NSArray *constraints = @[
+								 [NSLayoutConstraint constraintWithItem:separator
+															  attribute:NSLayoutAttributeTop
+															  relatedBy:NSLayoutRelationEqual
+																 toItem:bt
+															  attribute:NSLayoutAttributeBottom
+															 multiplier:1
+															   constant:1],
+								 [NSLayoutConstraint constraintWithItem:separator
+															  attribute:NSLayoutAttributeHeight
+															  relatedBy:NSLayoutRelationEqual
+																 toItem:nil
+															  attribute:NSLayoutAttributeNotAnAttribute
+															 multiplier:1
+															   constant:(1.0/scale)],
+								 [NSLayoutConstraint constraintWithItem:separator
+															  attribute:NSLayoutAttributeLeading
+															  relatedBy:NSLayoutRelationEqual
+																 toItem:bt
+															  attribute:NSLayoutAttributeLeading
+															 multiplier:1.0f
+															   constant:0.0f],
+								 [NSLayoutConstraint constraintWithItem:separator
+															  attribute:NSLayoutAttributeTrailing
+															  relatedBy:NSLayoutRelationEqual
+																 toItem:bt
+															  attribute:NSLayoutAttributeTrailing
+															 multiplier:1.0f
+															   constant:0.0f]
+								 ];
+		[sc addConstraints:constraints];
+
+		if (nTagIndex == _nDestructiveIndex)
         {
             bt.backgroundColor = (self.doDestructiveColor == nil) ? DO_AS_DESTRUCTIVE_COLOR : self.doDestructiveColor;
             [bt setTitleColor:(self.doDestructiveTextColor == nil) ? DO_AS_DESTRUCTIVE_TEXT_COLOR : self.doDestructiveTextColor forState:UIControlStateNormal];
